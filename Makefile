@@ -21,6 +21,12 @@ bench: shortest-path
 bench-O3: shortest-path-O3
 	papiex -e PAPI_TOT_CYC -e PAPI_TOT_INS -e PAPI_BR_MSP shortest-path < input-bench-littleendian >/dev/null
 
+bench100: shortest-path tests.sh
+	sh tests.sh 100
+
+bench100-O3: shortest-path-O3 tests.sh
+	sh tests.sh 100
+
 
 .PHONY: clean test
 
