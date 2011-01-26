@@ -15,21 +15,23 @@ test: shortest-path input-ref-littleendian output-ref input-bench-littleendian o
 	./shortest-path < input-bench-littleendian | diff -u - output-bench
 
 
-bench: shortest-path
+bench: remove-bin shortest-path
 	papiex -e PAPI_TOT_CYC -e PAPI_TOT_INS -e PAPI_BR_MSP shortest-path < input-bench-littleendian >/dev/null
 
-bench-O3: shortest-path-O3
+bench-O3: remove-bin shortest-path-O3
 	papiex -e PAPI_TOT_CYC -e PAPI_TOT_INS -e PAPI_BR_MSP shortest-path < input-bench-littleendian >/dev/null
 
-bench100: shortest-path tests.sh
+bench100: remove-bin shortest-path tests.sh
 	sh tests.sh 100
 
-bench100-O3: shortest-path-O3 tests.sh
+bench100-O3: remove-bin shortest-path-O3 tests.sh
 	sh tests.sh 100
 
 
 .PHONY: clean test
 
-clean:
+remove-bin:
 	rm -f ./shortest-path
-	rm ./shortest-path.papiex*
+
+clean: remove-bin
+	rm -f ./shortest-path.papiex*
