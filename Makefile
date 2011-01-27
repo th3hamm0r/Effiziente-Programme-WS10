@@ -4,11 +4,21 @@ CFLAGS=
 all: shortest-path
 
 
-shortest-path: shortest-path.c
+shortest-path: remove-bin shortest-path.c
 	gcc $(CFLAGS) -O -o shortest-path shortest-path.c
+	
+profile: remove-bin shortest-path.c
+	gcc $(CFLAGS) -pg -O -o shortest-path shortest-path.c
+	gprof ./shortest-path
 
-shortest-path-O3: shortest-path.c
-	gcc $(CFLAGS) -O3 -o shortest-path shortest-path.c
+
+shortest-path-O3: remove-bin shortest-path.c
+	gcc $(CFLAGS) -pg -O3 -o shortest-path shortest-path.c
+	
+profile-O3: remove-bin shortest-path.c
+	gcc $(CFLAGS) -pg -O3 -o shortest-path shortest-path.c
+	gprof ./shortest-path
+
 
 test: shortest-path input-ref-littleendian output-ref input-bench-littleendian output-bench
 	./shortest-path < input-ref-littleendian | diff -u - output-ref
