@@ -3922,24 +3922,27 @@ void transitions(struct waypoint inst[], struct waypoint trans[])
     pTrans++;
   }
 
+  int jcost;
+  PrimNum s;
+  struct cost *c;
+  struct waypoint *wo;
+  struct waypoint *wi;
   for (l = state_transitions; l != NULL; l = l->next) {
-    PrimNum s = l->super;
-    struct cost *c=super_costs+s;
-    struct waypoint *wo=&(inst[c->state_out]);
+    s = l->super;
+    c = super_costs+s;
+    wo=&(inst[c->state_out]);
 
     if (wo->cost == INF_COST)
       continue;
 
-    int jcost;
-    struct waypoint *wi=&(trans[c->state_in]);
+    wi=&(trans[c->state_in]);
 
-    jcost = wo->cost + ss_cost(s);
+    jcost = wo->cost + priminfos[s].length;
     if (jcost <= wi->cost) {
       wi->cost = jcost;
       wi->inst = s;
       wi->relocatable = wo->relocatable;
       wi->no_transition = 0;
-      /* if (ss_greedy) wi->cost = wo->cost ? */
     }
   }
 }
