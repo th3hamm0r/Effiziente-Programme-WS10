@@ -3915,9 +3915,11 @@ void transitions(struct waypoint inst[], struct waypoint trans[])
   int k;
   struct super_state *l;
   
-  for (k=0; k<maxstates; k++) {
-    trans[k] = inst[k];
-    trans[k].no_transition = 1;
+  memcpy(trans, inst, sizeof(trans[0])*maxstates);
+  struct waypoint *pTrans=trans;
+  for(k=maxstates; k; k--){
+    pTrans->no_transition=1;
+    pTrans++;
   }
 
   for (l = state_transitions; l != NULL; l = l->next) {
