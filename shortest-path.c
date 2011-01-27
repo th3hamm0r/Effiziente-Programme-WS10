@@ -3915,25 +3915,34 @@ void transitions(struct waypoint inst[], struct waypoint trans[])
   int k;
   struct super_state *l;
   
-  for (k=0; k<maxstates; k++) {
-    trans[k] = inst[k];
-    trans[k].no_transition = 1;
+  memcpy(trans, inst, sizeof(trans[0])*maxstates);
+  struct waypoint *pTrans=trans;
+  for(k=maxstates; k; k--){
+    pTrans->no_transition=1;
+    pTrans++;
   }
+
+  int jcost;
+  PrimNum s;
+  struct cost *c;
+  struct waypoint *wo;
+  struct waypoint *wi;
   for (l = state_transitions; l != NULL; l = l->next) {
-    PrimNum s = l->super;
-    int jcost;
-    struct cost *c=super_costs+s;
-    struct waypoint *wi=&(trans[c->state_in]);
-    struct waypoint *wo=&(inst[c->state_out]);
+    s = l->super;
+    c = super_costs+s;
+    wo=&(inst[c->state_out]);
+
     if (wo->cost == INF_COST)
       continue;
-    jcost = wo->cost + ss_cost(s);
+
+    wi=&(trans[c->state_in]);
+
+    jcost = wo->cost + priminfos[s].length;
     if (jcost <= wi->cost) {
       wi->cost = jcost;
       wi->inst = s;
       wi->relocatable = wo->relocatable;
       wi->no_transition = 0;
-      /* if (ss_greedy) wi->cost = wo->cost ? */
     }
   }
 }
@@ -3974,50 +3983,62 @@ void init_hashtable() {
 void optimize_rewrite(PrimNum origs[], int ninsts)
 {
   int i,j;
-  //static struct waypoint inst[MAX_BB+1][MAX_STATE];  /* before instruction*/
-  //static struct waypoint trans[MAX_BB+1][MAX_STATE]; /* before transition */
   int nextdyn, nextstate, no_transition;
   
   struct table_element *curr = hash_table + hash_super(origs, ninsts);
-  
+  struct cost *c;
+    
+    
   if(!(curr->ninsts == ninsts &&
     memcmp((char *)curr->origs,(char *)origs, sizeof(PrimNum)*ninsts) == 0)) {
-    curr->origs = origs;
-    curr->ninsts = ninsts;
+    
+  curr->origs = origs;
+  curr->ninsts = ninsts;
     
   init_waypoints(curr->inst[ninsts]);
   curr->inst[ninsts][CANONICAL_STATE].cost=0;
   
   transitions(curr->inst[ninsts],curr->trans[ninsts]);
+
+  struct super_state **superp;
+  struct super_state *supers;
+  PrimNum s;
+  int jcost;
+
+  struct waypoint *wi;
+  struct waypoint *wo;
   
   for (i=ninsts-1; i>=0; i--) {
     init_waypoints(curr->inst[i]);
     for (j=1; j<=max_super && i+j<=ninsts; j++) {
-      struct super_state **superp = lookup_super(origs+i, j);
+      superp = lookup_super(origs+i, j);
       if (superp!=NULL) {
-	struct super_state *supers = *superp;
-	for (; supers!=NULL; supers = supers->next) {
-	  PrimNum s = supers->super;
-	  int jcost;
-	  struct cost *c=super_costs+s;
-	  struct waypoint *wi=&(curr->inst[i][c->state_in]);
-	  struct waypoint *wo=&(curr->trans[i+j][c->state_out]);
-	  int no_transition = wo->no_transition;
+	supers = *superp;
+	do{
+	  s = supers->super;  
+	  c = super_costs+s;
+	  
+	  wo =&(curr->trans[i+j][c->state_out]);
+	  if (wo->cost == INF_COST) 
+	    continue;
+
+	  no_transition = wo->no_transition;
 	  if (!(is_relocatable(s)) && !wo->relocatable) {
 	    wo=&(curr->inst[i+j][c->state_out]);
 	    no_transition=1;
 	  }
-	  if (wo->cost == INF_COST) 
-	    continue;
-	  jcost = wo->cost + ss_cost(s);
+	  
+	  wi =&(curr->inst[i][c->state_in]);
+	  
+	  jcost = wo->cost + priminfos[s].length;
 	  if (jcost <= wi->cost) {
 	    wi->cost = jcost;
 	    wi->inst = s;
 	    wi->relocatable = is_relocatable(s);
 	    wi->no_transition = no_transition;
-	    /* if (ss_greedy) wi->cost = wo->cost ? */
 	  }
-	}
+	  supers = supers->next;
+	} while (supers!=NULL);
       }
     }
     transitions(curr->inst[i],curr->trans[i]);
@@ -4031,33 +4052,35 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
   nextstate=CANONICAL_STATE;
   no_transition = ((!curr->trans[0][nextstate].relocatable) 
 		   ||curr->trans[0][nextstate].no_transition);
+  PrimNum p;
+
   for (i=0; i<ninsts; i++) {
     if (i==nextdyn) {
       if (!no_transition) {
 	/* process trans */
-	PrimNum p = curr->trans[i][nextstate].inst;
-	struct cost *c = super_costs+p;
+	p = curr->trans[i][nextstate].inst;
+	c = super_costs+p;
 	assert(curr->trans[i][nextstate].cost != INF_COST);
 	assert(c->state_in==nextstate);
 	printinst(c);
 	nextstate = c->state_out;
       }
-      {
+
 	/* process inst */
-	PrimNum p = curr->inst[i][nextstate].inst;
-	struct cost *c=super_costs+p;
+	p = curr->inst[i][nextstate].inst;
+	c=super_costs+p;
 	assert(c->state_in==nextstate);
 	assert(curr->inst[i][nextstate].cost != INF_COST);
 	printinst(c);
 	no_transition = curr->inst[i][nextstate].no_transition;
 	nextstate = c->state_out;
 	nextdyn += c->length;
-      }
     }
-  }      
+  } 
+       
   if (!no_transition) {
-    PrimNum p = curr->trans[i][nextstate].inst;
-    struct cost *c = super_costs+p;
+    p = curr->trans[i][nextstate].inst;
+    c = super_costs+p;
     assert(c->state_in==nextstate);
     assert(curr->trans[i][nextstate].cost != INF_COST);
     assert(i==nextdyn);
