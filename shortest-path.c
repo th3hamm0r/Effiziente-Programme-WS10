@@ -3990,16 +3990,18 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 	supers = *superp;
 	do{
 	  s = supers->super;  
-	  c =super_costs+s;
+	  c = super_costs+s;
 	  
 	  wo =&(trans[i+j][c->state_out]);
+	  if (wo->cost == INF_COST) 
+	    continue;
+
 	  no_transition = wo->no_transition;
+
 	  if (!(is_relocatable(s)) && !wo->relocatable) {
 	    wo=&(inst[i+j][c->state_out]);
 	    no_transition=1;
 	  }
-	  if (wo->cost == INF_COST) 
-	    continue;
 	  
 	  wi =&(inst[i][c->state_in]);
 	  
@@ -4033,17 +4035,15 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 	printinst(c);
 	nextstate = c->state_out;
       }
-      {
-	/* process inst */
-	p = inst[i][nextstate].inst;
-	c=super_costs+p;
-	assert(c->state_in==nextstate);
-	assert(inst[i][nextstate].cost != INF_COST);
-	printinst(c);
-	no_transition = inst[i][nextstate].no_transition;
-	nextstate = c->state_out;
-	nextdyn += c->length;
-      }
+      /* process inst */
+      p = inst[i][nextstate].inst;
+      c=super_costs+p;
+      assert(c->state_in==nextstate);
+      assert(inst[i][nextstate].cost != INF_COST);
+      printinst(c);
+      no_transition = inst[i][nextstate].no_transition;
+      nextstate = c->state_out;
+      nextdyn += c->length;
     }
   }      
   if (!no_transition) {
