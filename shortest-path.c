@@ -3816,13 +3816,16 @@ static void prepare_super_table()
   int nsupers = 0;
   
   int end = sizeof(super_costs)/sizeof(super_costs[0]);
+  struct super_state **ss_listp;
+  struct super_state *ss;
+  struct cost *c;
 
   for (i=0; i<end; i++) {
-    struct cost *c = &super_costs[i];
+    c = &super_costs[i];
     if ((c->length < 2 || nsupers < static_super_number) &&
 	     c->state_in < maxstates && c->state_out < maxstates) {
-      struct super_state **ss_listp= lookup_super(super2+c->offset, c->length);
-      struct super_state *ss = malloc(sizeof(struct super_state));
+      ss_listp= lookup_super(super2+c->offset, c->length);
+      ss = malloc(sizeof(struct super_state));
       ss->super= i;
       if (c->offset==N_noop && i != N_noop) {
 	      if (is_relocatable(i)) {
@@ -3833,12 +3836,13 @@ static void prepare_super_table()
 	      ss->next = *ss_listp;
 	      *ss_listp = ss;
       } else {
-	      int hash = hash_super(super2+c->offset, c->length);
+        PrimNum* tmpStart = super2+c->offset;
+	      int hash = hash_super(tmpStart, c->length);
 	      struct super_table_entry **p = &super_table[hash];
 	      struct super_table_entry *e = malloc(sizeof(struct super_table_entry));
 	      ss->next = NULL;
 	      e->next = *p;
-	      e->start = super2 + c->offset;
+	      e->start = tmpStart;
 	      e->length = c->length;
 	      e->ss_list = ss;
 	      *p = e;
