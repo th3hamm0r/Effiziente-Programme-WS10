@@ -3814,37 +3814,39 @@ static void prepare_super_table()
 {
   int i;
   int nsupers = 0;
+  
+  int end = sizeof(super_costs)/sizeof(super_costs[0]);
 
-  for (i=0; i<sizeof(super_costs)/sizeof(super_costs[0]); i++) {
+  for (i=0; i<end; i++) {
     struct cost *c = &super_costs[i];
     if ((c->length < 2 || nsupers < static_super_number) &&
-	c->state_in < maxstates && c->state_out < maxstates) {
+	     c->state_in < maxstates && c->state_out < maxstates) {
       struct super_state **ss_listp= lookup_super(super2+c->offset, c->length);
       struct super_state *ss = malloc(sizeof(struct super_state));
       ss->super= i;
       if (c->offset==N_noop && i != N_noop) {
-	if (is_relocatable(i)) {
-	  ss->next = state_transitions;
-	  state_transitions = ss;
-	}
+	      if (is_relocatable(i)) {
+	        ss->next = state_transitions;
+	        state_transitions = ss;
+	      }
       } else if (ss_listp != NULL) {
-	ss->next = *ss_listp;
-	*ss_listp = ss;
+	      ss->next = *ss_listp;
+	      *ss_listp = ss;
       } else {
-	int hash = hash_super(super2+c->offset, c->length);
-	struct super_table_entry **p = &super_table[hash];
-	struct super_table_entry *e = malloc(sizeof(struct super_table_entry));
-	ss->next = NULL;
-	e->next = *p;
-	e->start = super2 + c->offset;
-	e->length = c->length;
-	e->ss_list = ss;
-	*p = e;
+	      int hash = hash_super(super2+c->offset, c->length);
+	      struct super_table_entry **p = &super_table[hash];
+	      struct super_table_entry *e = malloc(sizeof(struct super_table_entry));
+	      ss->next = NULL;
+	      e->next = *p;
+	      e->start = super2 + c->offset;
+	      e->length = c->length;
+	      e->ss_list = ss;
+	      *p = e;
       }
       if (c->length > max_super)
-	max_super = c->length;
+	      max_super = c->length;
       if (c->length >= 2)
-	nsupers++;
+	      nsupers++;
     }
   }
 }
