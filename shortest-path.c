@@ -2077,10 +2077,7 @@ const char const* const prim_names[]={
 "lit-execute",
 };
 
-static int is_relocatable(int p)
-{
-  return !no_dynamic && priminfos[p].start != NULL;
-}
+#define is_relocatable(_P_) (!no_dynamic && priminfos[(_P_)].start != NULL)
 
 /* static superinstruction stuff */
 
