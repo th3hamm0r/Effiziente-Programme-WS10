@@ -3988,7 +3988,7 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
       superp = lookup_super(origs+i, j);
       if (superp!=NULL) {
 	supers = *superp;
-	for (; supers!=NULL; supers = supers->next) {
+	do{
 	  s = supers->super;  
 	  c =super_costs+s;
 	  
@@ -4009,9 +4009,9 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 	    wi->inst = s;
 	    wi->relocatable = is_relocatable(s);
 	    wi->no_transition = no_transition;
-	    /* if (ss_greedy) wi->cost = wo->cost ? */
 	  }
-	}
+	  supers = supers->next;
+	} while (supers!=NULL);
       }
     }
     transitions(inst[i],trans[i]);
