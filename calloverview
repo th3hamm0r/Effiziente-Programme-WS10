@@ -1,0 +1,19 @@
+
+1: main
+1: prepare_super_table()
+1: for: (inputsize) 
+    n: optimize_rewrite
+
+n: optimize_rewrite
+n: init_waypoints()
+n: transitions()
+n: for:
+    n2: init_waypoints()
+    n2: for:
+      n2: lookup_super()
+        n2: for:
+	  n3: is_relocatable()
+	  n3: is_relocatable()
+    n2: transitions()
+n: for:
+    n2: printinst

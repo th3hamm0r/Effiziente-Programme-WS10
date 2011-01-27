@@ -51,7 +51,7 @@ instructions=`expr $instructions / $count`
 cycleusr=`expr $cycleusr / $count`
 cyclesys=`expr $cyclesys / $count`
 
-#rm tempfoo
+rm tempfoo
 
 #echo "speicher:          $memory"
 echo "tsc:               $tsc"
