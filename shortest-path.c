@@ -454,7 +454,7 @@ static int no_dynamic=0; /* if true, no code is generated
 					     dynamically */
 static int static_super_number = 10000; /* number of ss used if available */
 #define MAX_STATE 9 /* maximum number of states */
-static int maxstates = MAX_STATE; /* number of states for stack caching */
+#define maxstates MAX_STATE /* number of states for stack caching */
 
 FILE *output;
 
