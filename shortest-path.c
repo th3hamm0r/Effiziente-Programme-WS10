@@ -3919,14 +3919,18 @@ void transitions(struct waypoint inst[], struct waypoint trans[])
     trans[k] = inst[k];
     trans[k].no_transition = 1;
   }
+
   for (l = state_transitions; l != NULL; l = l->next) {
     PrimNum s = l->super;
-    int jcost;
     struct cost *c=super_costs+s;
-    struct waypoint *wi=&(trans[c->state_in]);
     struct waypoint *wo=&(inst[c->state_out]);
+
     if (wo->cost == INF_COST)
       continue;
+
+    int jcost;
+    struct waypoint *wi=&(trans[c->state_in]);
+
     jcost = wo->cost + ss_cost(s);
     if (jcost <= wi->cost) {
       wi->cost = jcost;
