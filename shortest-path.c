@@ -3974,19 +3974,26 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
   init_waypoints(inst[ninsts]);
   inst[ninsts][CANONICAL_STATE].cost=0;
   transitions(inst[ninsts],trans[ninsts]);
+
+  struct super_state **superp;
+  struct super_state *supers;
+  PrimNum s;
+  int jcost;
+  struct cost *c;
+  struct waypoint *wi;
+  struct waypoint *wo;
   for (i=ninsts-1; i>=0; i--) {
     init_waypoints(inst[i]);
     for (j=1; j<=max_super && i+j<=ninsts; j++) {
-      struct super_state **superp = lookup_super(origs+i, j);
+      superp = lookup_super(origs+i, j);
       if (superp!=NULL) {
-	struct super_state *supers = *superp;
+	supers = *superp;
 	for (; supers!=NULL; supers = supers->next) {
-	  PrimNum s = supers->super;
-	  int jcost;
-	  struct cost *c=super_costs+s;
-	  struct waypoint *wi=&(inst[i][c->state_in]);
-	  struct waypoint *wo=&(trans[i+j][c->state_out]);
-	  int no_transition = wo->no_transition;
+	  s = supers->super;  
+	  c =super_costs+s;
+	  wi =&(inst[i][c->state_in]);
+	  wo =&(trans[i+j][c->state_out]);
+	  no_transition = wo->no_transition;
 	  if (!(is_relocatable(s)) && !wo->relocatable) {
 	    wo=&(inst[i+j][c->state_out]);
 	    no_transition=1;
