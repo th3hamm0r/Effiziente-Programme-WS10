@@ -4021,12 +4021,13 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
   nextstate=CANONICAL_STATE;
   no_transition = ((!trans[0][nextstate].relocatable) 
 		   ||trans[0][nextstate].no_transition);
+  PrimNum p;
   for (i=0; i<ninsts; i++) {
     if (i==nextdyn) {
       if (!no_transition) {
 	/* process trans */
-	PrimNum p = trans[i][nextstate].inst;
-	struct cost *c = super_costs+p;
+	p = trans[i][nextstate].inst;
+	c = super_costs+p;
 	assert(trans[i][nextstate].cost != INF_COST);
 	assert(c->state_in==nextstate);
 	printinst(c);
@@ -4034,8 +4035,8 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
       }
       {
 	/* process inst */
-	PrimNum p = inst[i][nextstate].inst;
-	struct cost *c=super_costs+p;
+	p = inst[i][nextstate].inst;
+	c=super_costs+p;
 	assert(c->state_in==nextstate);
 	assert(inst[i][nextstate].cost != INF_COST);
 	printinst(c);
@@ -4046,8 +4047,8 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
     }
   }      
   if (!no_transition) {
-    PrimNum p = trans[i][nextstate].inst;
-    struct cost *c = super_costs+p;
+    p = trans[i][nextstate].inst;
+    c = super_costs+p;
     assert(c->state_in==nextstate);
     assert(trans[i][nextstate].cost != INF_COST);
     assert(i==nextdyn);
