@@ -3904,10 +3904,11 @@ struct waypoint {
 
 void init_waypoints(struct waypoint ws[])
 {
-  int k;
+  int k = maxstates ;
 
-  for (k=0; k<maxstates; k++)
-    ws[k].cost=INF_COST;
+  do {
+    ws[--k].cost=INF_COST;
+  } while(k);
 }
 
 void transitions(struct waypoint inst[], struct waypoint trans[])
