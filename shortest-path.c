@@ -3773,7 +3773,7 @@ struct super_state {
   PrimNum super;
 };
 
-#define HASH_SIZE 1024
+#define HASH_SIZE 512
 
 struct super_table_entry {
   struct super_table_entry *next;
