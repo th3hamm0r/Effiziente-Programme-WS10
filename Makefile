@@ -15,7 +15,7 @@ profile: remove-bin shortest-path.c
 
 
 shortest-path-O3: remove-bin shortest-path.c
-	gcc $(CFLAGS) -pg -O3 -o shortest-path shortest-path.c
+	gcc $(CFLAGS) -O3 -o shortest-path shortest-path.c
 	
 profile-O3: remove-bin shortest-path.c
 	gcc $(CFLAGS) -pg -O3 -o shortest-path shortest-path.c

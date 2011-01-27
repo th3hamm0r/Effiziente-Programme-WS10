@@ -1,0 +1,22 @@
+<< initial benchmark >>
+
+commit 72dd1934a83d18b9fea60d4041f136eb4296a7a5
+
+-O
+tsc:               152506782
+branch misses:     1192480
+L2 Cache accesses: 653186
+instructions:      244904219
+cycles(user):      150135579
+cycles(system):    2372649
+
+-O3
+tsc:               146400319
+branch misses:     1018981
+L2 Cache accesses: 585088
+instructions:      229313570
+cycles(user):      144490924
+cycles(system):    1910888
+
+
+
