@@ -4044,16 +4044,17 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 int main(int argc, char **argv, char **env)
 {
   PrimNum data[MAX_INPUT_SIZE];
-  PrimNum *start = data;
+  PrimNum *start, *i;
   size_t input_size;
-  int i;
+  int ninsts;
 
   prepare_super_table();
   input_size = fread(data,sizeof(PrimNum),MAX_INPUT_SIZE,stdin);
-  for (i = 0; i<input_size; i++)
-    if (data[i] == -1) {
-      optimize_rewrite(start, data+i-start);
-      start = data+i+1;
+  for (i = start = data, ninsts = 0; input_size; input_size--, i++, ninsts++)
+    if (*i == -1) {
+      optimize_rewrite(start, ninsts);
+      start = i+1; // save new start
+      ninsts = -1; // reset instructions counter
     }
   return 0;
 }
