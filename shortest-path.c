@@ -3800,11 +3800,12 @@ static struct super_state **lookup_super(PrimNum *start, int length)
 {
   int hash=hash_super(start,length);
   struct super_table_entry *p = super_table[hash];
+  int size = length*sizeof(PrimNum);
 
   /* assert(length >= 2); */
   for (; p!=NULL; p = p->next) {
     if (length == p->length &&
-	memcmp((char *)p->start, (char *)start, length*sizeof(PrimNum))==0)
+	memcmp((char *)p->start, (char *)start, size)==0)
       return &(p->ss_list);
   }
   return NULL;
