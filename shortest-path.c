@@ -3991,7 +3991,7 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 	for (; supers!=NULL; supers = supers->next) {
 	  s = supers->super;  
 	  c =super_costs+s;
-	  wi =&(inst[i][c->state_in]);
+	  
 	  wo =&(trans[i+j][c->state_out]);
 	  no_transition = wo->no_transition;
 	  if (!(is_relocatable(s)) && !wo->relocatable) {
@@ -4000,7 +4000,10 @@ void optimize_rewrite(PrimNum origs[], int ninsts)
 	  }
 	  if (wo->cost == INF_COST) 
 	    continue;
-	  jcost = wo->cost + ss_cost(s);
+	  
+	  wi =&(inst[i][c->state_in]);
+	  
+	  jcost = wo->cost + priminfos[s].length;
 	  if (jcost <= wi->cost) {
 	    wi->cost = jcost;
 	    wi->inst = s;
