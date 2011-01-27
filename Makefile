@@ -41,6 +41,11 @@ bench100: remove-bin shortest-path tests.sh
 bench100-O3: remove-bin shortest-path-O3 tests.sh
 	sh tests.sh 100
 
+bench1000: remove-bin shortest-path tests.sh
+	sh tests.sh 1000
+
+bench1000-O3: remove-bin shortest-path-O3 tests.sh
+	sh tests.sh 1000
 
 .PHONY: clean test
 
